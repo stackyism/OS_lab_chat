@@ -1,0 +1,95 @@
+/*
+ * To change this template, choose Tools | Templates
+ * and open the template in the editor.
+ */
+
+package final_chat;
+
+/**
+ *
+ * @author student
+ */
+
+/**
+ * This program is a basic demo for IPC.
+ * here in this program strict message alteration is required.
+ * both the programs are identical except for the connection setting.
+ *
+ * this process work as server process.
+ *
+ */
+
+import java.net.*;
+import java.io.*;
+
+
+public class process1 {
+
+    public static void main(String[] args) {
+
+        ServerSocket ServerSocket = null;
+        Socket clientSocket = null;
+        String inputLine, outputLine;
+
+        try {
+            //creating a server Socket
+            ServerSocket = new ServerSocket(4444);
+            //can use any port number which is greater then 1024
+        } catch (IOException e) {
+            System.out.println("Could not listen on port: 4444");
+            System.exit(-1);
+        }
+
+        try {
+            //accepting a clients request// wait till a client connects
+            clientSocket = ServerSocket.accept();
+//------------------connection Established----------------------
+
+
+            PrintWriter out = null;
+            BufferedReader in = null;
+            String msg = "no message";
+            while (true) {
+                //create an output stream
+                out = new PrintWriter(clientSocket.getOutputStream(), true);
+                //create an input stream
+                in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+
+                //reading from a client
+                if(in.ready()==true){
+                    
+                inputLine = in.readLine();
+                msg = inputLine;
+                if (msg.equals("exit")) {
+                    break;
+                }
+                System.out.println("echo:" + inputLine);
+                }
+                System.out.println("Message:");
+                BufferedReader stdIn = new BufferedReader(new InputStreamReader(System.in));
+
+                outputLine = stdIn.readLine();
+                //sending message to a client
+                out.println(outputLine);
+
+                if (outputLine.equals("exit") || msg.equals("exit")) {
+                    break;
+                }
+                out = null;
+                in = null;
+
+            }
+            out.close();
+            in.close();
+
+            clientSocket.close();
+
+            ServerSocket.close();
+
+        } catch (IOException e) {
+            System.out.println("Accept failed: 4444");
+            System.exit(-1);
+
+        }
+    }
+}
